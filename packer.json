@@ -1,0 +1,37 @@
+{
+    "builders": [
+     {	    
+        "type": "docker",
+	"name": "centos:mylatest",
+        "image": "centos",
+        "commit": "true",
+        "pull": "true",
+        "changes": [
+            "ENTRYPOINT [\"nginx -g 'daemon off;'\"]"
+        ]
+     }
+    ],
+    
+    "provisioners": [
+     {
+        "type": "shell",
+        "inline": [
+            "yum update -y",		
+            "yum install httpd -y",
+	    "yum install docker -y",
+	    "docker run -itd --privileged centos:latest /usr/sbin/init",
+	    "systemctl enable httpd",
+	    "systemctl start httpd"
+        ]
+     }
+     ],
+
+    "post-processors": [
+     {    
+         "type": "docker-tag",
+         "repository": "lightninglife/mycentosimage",
+         "tag": ["1.0"]
+     }
+    ]
+}
+
